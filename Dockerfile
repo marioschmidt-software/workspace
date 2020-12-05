@@ -1,17 +1,10 @@
-FROM ubuntu
-
+FROM ubuntu AS ubuntu-desktop
 ENV DEBIAN_FRONTEND=noninteractive
-
-RUN apt-get update && apt-get install --yes systemd sudo wget
-
-RUN adduser --disabled-password --gecos '' ubuntu
-RUN echo 'ubuntu:ubuntu' | chpasswd
-RUN adduser ubuntu sudo
-
 RUN apt-get install --yes ubuntu-desktop
-
-RUN wget https://dl.google.com/linux/direct/chrome-remote-desktop_current_amd64.deb
-RUN dpkg -i chrome-remote-desktop_current_amd64.deb || apt-get install -f
-RUN DISPLAY= /opt/google/chrome-remote-desktop/start-host --code="4/0AY0e-g6yEKy6DQVb2B980WUoMWEl94t-i4qpekD_RqnKhXAog0z2UqaCmUw_ppN1IXYqPA" --redirect-url="https://remotedesktop.google.com/_/oauthredirect" --name=$(hostname) --pin=311276
-
 CMD ["/usr/lib/systemd/systemd"]
+
+FROM ubuntu-desktop AS ubuntu-workspace
+RUN wget https://dl.google.com/linux/direct/chrome-remote-desktop_current_amd64.deb
+RUN apt-get install --yes xvfb xbase-clients python3-psutils && dpkg -i chrome-remote-desktop_current_amd64.deb
+
+RUN adduser --disabled-password --gecos '' ubuntu && adduser ubuntu sudo && (echo 'ubuntu:ubuntu' | chpasswd)
