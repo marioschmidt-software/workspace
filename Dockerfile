@@ -1,6 +1,6 @@
 FROM ubuntu AS ubuntu-desktop
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get install --yes --no-install-recommends curl dialog systemd sudo vim ubuntu-desktop-minimal language-pack-de
+RUN apt-get update && apt-get install --yes --no-install-recommends systemd curl dialog sudo vim ubuntu-desktop language-pack-de language-pack-gnome-de
 CMD ["/usr/lib/systemd/systemd"]
 RUN curl -sL https://dl.google.com/linux/direct/chrome-remote-desktop_current_amd64.deb > chrome-remote-desktop_current_amd64.deb
 RUN (dpkg -i chrome-remote-desktop_current_amd64.deb || apt-get install --yes -f)
