@@ -1,9 +1,19 @@
-FROM ubuntu AS ubuntu-desktop
+FROM ubuntu AS desktop 
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get install --yes --no-install-recommends systemd curl dialog sudo vim ubuntu-desktop language-pack-de language-pack-gnome-de
-CMD ["/usr/lib/systemd/systemd"]
-RUN curl -sL https://dl.google.com/linux/direct/chrome-remote-desktop_current_amd64.deb > chrome-remote-desktop_current_amd64.deb
-RUN (dpkg -i chrome-remote-desktop_current_amd64.deb || apt-get install --yes -f)
-RUN adduser --disabled-password --gecos '' ubuntu \
- && (echo 'ubuntu:ubuntu' | chpasswd) \
- && adduser ubuntu sudo
+RUN apt-get update
+RUN apt-get install --yes tasksel apt-utils language-pack-de
+RUN tasksel install ubuntu-desktop ubuntu-desktop-default-languages
+
+FROM desktop AS workspace
+RUN curl -fsSLO https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+RUN curl -fsSLO https://dl.google.com/linux/direct/chrome-remote-desktop_current_amd64.deb
+RUN dpkg --install google-chrome-stable_*_*.deb chrome-remote-desktop_*_*.deb
+RUN apt-get install --yes -f
+
+CMD /usr/lib/systemd/systemd
+
+RUN adduser --disabled-password --gecos '' ubuntu && adduser ubuntu sudo
+RUN echo 'ubuntu:ubuntu' | chpasswd
+
+USER ubuntu
+WORKDIR /home/ubuntu
