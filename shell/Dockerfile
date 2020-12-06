@@ -1,8 +1,7 @@
 FROM ubuntu AS server 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update
-RUN apt-get install --yes tasksel language-pack-de
-RUN tasksel install server
+RUN apt-get install --yes sudo systemd language-pack-de
 
 CMD /usr/lib/systemd/systemd
 
